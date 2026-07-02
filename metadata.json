@@ -1,0 +1,6 @@
+{
+  "name": "Axigear Dealers Portal",
+  "description": "Multi-dealership portal system for Axigear including individual inventory records, isolated invoice billing, attendance ledgers, employee registers, and live support hq links.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
