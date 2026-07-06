@@ -33,6 +33,7 @@ import {
   saveEmployeeToDb,
   saveAttendanceRecordToDb,
   saveSaleToDb,
+  deleteSaleFromDb,
   saveServiceTicketToDb,
   saveServiceMessageToDb,
   testConnection,
@@ -398,7 +399,7 @@ export default function App() {
     if (!currentDealer) return;
 
     const dealerSalesCount = sales.filter(s => s.dealerId === currentDealer.id).length + 1;
-    const invoiceNo = saleData.invoiceNo || `AAV-RRE-${currentDealer.code}-${String(dealerSalesCount).padStart(3, '0')}`;
+    const invoiceNo = saleData.invoiceNo || `AAV-RRE-ZEN-Z-${String(dealerSalesCount).padStart(3, '0')}`;
 
     const newSale: Sale = {
       ...saleData,
@@ -410,6 +411,16 @@ export default function App() {
 
     setSales(prev => [newSale, ...prev]);
     saveSaleToDb(newSale).catch(console.error);
+  };
+
+  const handleDeleteSale = (id: string) => {
+    setSales(prev => prev.filter(s => s.id !== id));
+    deleteSaleFromDb(id).catch(console.error);
+  };
+
+  const handleEditSale = (sale: Sale) => {
+    setSales(prev => prev.map(s => s.id === sale.id ? sale : s));
+    saveSaleToDb(sale).catch(console.error);
   };
 
   // --- Employee Directory ---
@@ -549,12 +560,14 @@ export default function App() {
         );
       case 'sales':
         return (
-          <SalesManager 
+          <SalesManager
             currentDealer={currentDealer}
             inventory={inventory}
             sales={sales}
             employees={employees}
             onAddSale={handleAddSale}
+            onDeleteSale={handleDeleteSale}
+            onEditSale={handleEditSale}
             onDeductInventoryStock={handleDeductInventoryStock}
           />
         );

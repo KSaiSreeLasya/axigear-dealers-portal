@@ -36,6 +36,8 @@ interface SalesManagerProps {
   sales: Sale[];
   employees: Employee[];
   onAddSale: (sale: Omit<Sale, 'id' | 'dealerId' | 'invoiceNo' | 'date'> & { date?: string; invoiceNo?: string }) => void;
+  onDeleteSale?: (id: string) => void;
+  onEditSale?: (sale: Sale) => void;
   onDeductInventoryStock: (itemId: string, quantity: number) => void;
 }
 
@@ -66,6 +68,8 @@ export default function SalesManager({
   sales,
   employees,
   onAddSale,
+  onDeleteSale,
+  onEditSale,
   onDeductInventoryStock
 }: SalesManagerProps) {
   const [activeSubTab, setActiveSubTab] = useState<'projects' | 'pipeline' | 'serviceInvoices'>('projects');
@@ -144,7 +148,7 @@ export default function SalesManager({
       nextNum++;
     }
 
-    return `AAV-RRE-${currentDealer.code}-${String(nextNum).padStart(3, '0')}`;
+    return `AAV-RRE-ZENZ-EST-${String(nextNum).padStart(3, '0')}`;
   };
 
   useEffect(() => {
@@ -270,10 +274,12 @@ export default function SalesManager({
 
   const handleDeleteSale = (id: string) => {
     if (confirm('Are you sure you want to delete this sale?')) {
-      // This would need to be handled by the parent component
-      // For now, we'll just notify that the operation would delete the sale
-      console.log('Delete sale:', id);
-      alert('Delete functionality handled by parent App component');
+      if (onDeleteSale) {
+        onDeleteSale(id);
+      } else {
+        console.log('Delete sale:', id);
+        alert('Delete functionality handled by parent App component');
+      }
     }
   };
 
@@ -378,7 +384,7 @@ export default function SalesManager({
   useEffect(() => {
     // Auto-generate service invoice number
     const dealerSrvCount = serviceInvoices.filter(s => s.dealerId === currentDealer.id).length + 1;
-    setSrvInvoiceNo(`AAV-RRE-${currentDealer.code}-${String(dealerSrvCount).padStart(3, '0')}`);
+    setSrvInvoiceNo(`AAV-RRE-ZENZ-SRV-${String(dealerSrvCount).padStart(3, '0')}`);
   }, [serviceInvoices, currentDealer.id, currentDealer.code]);
 
   // Split calculations for Sale Entry
@@ -512,7 +518,7 @@ export default function SalesManager({
       return;
     }
 
-    onAddSale({
+    const saleData = {
       customerName: saleCustomerName,
       customerPhone: saleContactNo,
       items: [
@@ -527,7 +533,6 @@ export default function SalesManager({
       paymentMethod: salePaymentMode,
       salespersonId: activeEmployees[0]?.id || 'staff-1',
       salespersonName: activeEmployees[0]?.name || 'Branch Office Head',
-      // our extra attributes
       modelNo: saleModelNo,
       location: saleLocation,
       productDesc: saleProductDesc,
@@ -543,9 +548,23 @@ export default function SalesManager({
       splits: saleSplits.filter(s => s.amount > 0),
       displaySplitsInInvoice: saleDisplaySplits,
       date: saleInvoiceDate
-    });
+    };
+
+    if (editingSale) {
+      const updatedSale: Sale = {
+        ...editingSale,
+        ...saleData,
+        items: saleData.items
+      };
+      if (onEditSale) {
+        onEditSale(updatedSale);
+      }
+    } else {
+      onAddSale(saleData);
+    }
 
     setIsAddSaleOpen(false);
+    setEditingSale(null);
 
     // reset fields
     setSaleModelNo('');
@@ -704,7 +723,30 @@ export default function SalesManager({
                           </button>
                           <a
                             href="#"
-                            onClick={(e) => { e.preventDefault(); alert('Edit functionality handled by parent component'); }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setEditingSale(sale);
+                              setSaleModelNo(sale.modelNo || '');
+                              setSaleCustomerName(sale.customerName);
+                              setSaleContactNo(sale.customerPhone || '');
+                              setSaleLocation(sale.location || '');
+                              setSaleProductDesc(sale.productDesc || '');
+                              setSaleHsnNo(sale.hsnNo || '871160');
+                              setSaleChassisNo(sale.chassisNo || '');
+                              setSaleMotorNo(sale.motorNo || '');
+                              setSaleBatteryNo(sale.batteryNo || '');
+                              setSaleBatteryWarranty(sale.batteryWarranty || '36months or 30,000kms');
+                              setSaleBatteryCapacity(sale.batteryCapacity || '45V-30AH');
+                              setSaleVehicleWarranty(sale.vehicleWarranty || '12 months');
+                              setSaleInvoiceDate(sale.date);
+                              setSaleAmount(sale.totalAmount);
+                              setSalePaymentMode(sale.paymentMethod as any);
+                              setSaleLeadSource(sale.leadSource || '');
+                              setSaleGstNo(sale.gstNo || '');
+                              setSaleDisplaySplits(sale.displaySplitsInInvoice !== false);
+                              setSaleSplits(sale.splits || [{ amount: 0, paymentMethod: 'Cash', date: '2026-06-22' }]);
+                              setIsAddSaleOpen(true);
+                            }}
                             className="px-2.5 py-1 text-blue-600 hover:bg-blue-50 rounded text-[10px] font-bold cursor-pointer transition-colors"
                             title="Edit sale"
                           >
@@ -1453,7 +1495,7 @@ export default function SalesManager({
                     <th className="py-2.5 px-4 font-mono text-bold">Date</th>
                     <th className="py-2.5 px-4 text-right font-sans text-bold">Labour Charges</th>
                     <th className="py-2.5 px-4 text-right font-sans text-bold">Total Amount</th>
-                    <th className="py-2.5 px-4 text-right font-sans text-bold">View Tax Invoice</th>
+                    <th className="py-2.5 px-4 text-right font-sans text-bold">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-150 text-gray-750 text-center text-bold">
@@ -1466,12 +1508,32 @@ export default function SalesManager({
                       <td className="py-3 px-4 text-right font-mono text-gray-650">₹{srv.labourCharges.toLocaleString('en-IN')}</td>
                       <td className="py-3 px-4 font-bold font-mono text-right text-emerald-700">₹{srv.totalAmount.toLocaleString('en-IN')}</td>
                       <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => setViewingTaxInvoice({ type: 'service', data: srv })}
-                          className="px-2.5 py-1 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded text-[10px] font-bold tracking-wider cursor-pointer border border-emerald-105"
-                        >
-                          Invoice
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setViewingTaxInvoice({ type: 'service', data: srv })}
+                            className="px-2.5 py-1 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded text-[10px] font-bold tracking-wider cursor-pointer border border-emerald-105"
+                          >
+                            Invoice
+                          </button>
+                          <a
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setEditingServiceInvoice(srv);
+                            }}
+                            className="px-2.5 py-1 text-blue-600 hover:bg-blue-50 rounded text-[10px] font-bold cursor-pointer transition-colors"
+                            title="Edit service invoice"
+                          >
+                            Edit
+                          </a>
+                          <button
+                            onClick={() => handleDeleteServiceInvoice(srv.id)}
+                            className="p-1 px-1.5 text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                            title="Delete service invoice"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1493,11 +1555,18 @@ export default function SalesManager({
           <div className="bg-white rounded-2xl max-w-4xl w-full border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col text-gray-800 font-sans">
             <div className="bg-gray-50 border-b p-5 flex items-center justify-between shrink-0">
               <div>
-                <h3 className="font-bold text-base text-gray-950 uppercase tracking-wide">New sales entry</h3>
-                <p className="text-gray-450 text-[10px] mt-0.5">Register direct retail motorcycle sale transactions</p>
+                <h3 className="font-bold text-base text-gray-950 uppercase tracking-wide">
+                  {editingSale ? 'Edit sales entry' : 'New sales entry'}
+                </h3>
+                <p className="text-gray-450 text-[10px] mt-0.5">
+                  {editingSale ? 'Update motorcycle sale transaction' : 'Register direct retail motorcycle sale transactions'}
+                </p>
               </div>
-              <button 
-                onClick={() => setIsAddSaleOpen(false)}
+              <button
+                onClick={() => {
+                  setIsAddSaleOpen(false);
+                  setEditingSale(null);
+                }}
                 className="p-1 px-1.5 hover:bg-gray-100 rounded text-gray-550"
               >
                 <X className="w-5 h-5" />
