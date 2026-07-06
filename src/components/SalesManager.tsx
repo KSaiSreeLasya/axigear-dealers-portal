@@ -1711,12 +1711,14 @@ export default function SalesManager({
                 <div className="space-y-1">
                   <h4 className="font-extrabold text-base tracking-tight text-gray-950">AXIGEAR LOUNGE LLP</h4>
                   <p className="text-gray-500 text-[10px]">
-                    Registered Office: H-24, Sector 63, Noida, Uttar Pradesh, 201301<br />
-                    Central Support Email: billing@axigearelectric.com<br />
-                    State: Uttar Pradesh | Code: 09
+                    Registered Office: SY 02, PLOT NO.148, MYTHRI NAGAR, MADINAGUDA
+
+                    HYDERABAD, TELANGANA, INDIA 500049<br />
+                    
+                    State:TELANGANA | Code: 36
                   </p>
                   <p className="font-mono text-[9px] font-bold bg-emerald-50 text-emerald-800 inline-block px-1.5 py-0.5 rounded border border-emerald-200">
-                    CENTRAL GSTIN: 09AAHCA9184B1Z5
+                     GSTIN: 36ACJFA4386L1ZW
                   </p>
                 </div>
 
