@@ -148,7 +148,7 @@ export default function SalesManager({
       nextNum++;
     }
 
-    return `AAV-RRE-${currentDealer.code}-${String(nextNum).padStart(3, '0')}`;
+    return `AAV-RRE-ZENZ-EST-${String(nextNum).padStart(3, '0')}`;
   };
 
   useEffect(() => {
@@ -384,7 +384,7 @@ export default function SalesManager({
   useEffect(() => {
     // Auto-generate service invoice number
     const dealerSrvCount = serviceInvoices.filter(s => s.dealerId === currentDealer.id).length + 1;
-    setSrvInvoiceNo(`AAV-RRE-${currentDealer.code}-${String(dealerSrvCount).padStart(3, '0')}`);
+    setSrvInvoiceNo(`AAV-RRE-ZENZ-SRV-${String(dealerSrvCount).padStart(3, '0')}`);
   }, [serviceInvoices, currentDealer.id, currentDealer.code]);
 
   // Split calculations for Sale Entry
@@ -1495,7 +1495,7 @@ export default function SalesManager({
                     <th className="py-2.5 px-4 font-mono text-bold">Date</th>
                     <th className="py-2.5 px-4 text-right font-sans text-bold">Labour Charges</th>
                     <th className="py-2.5 px-4 text-right font-sans text-bold">Total Amount</th>
-                    <th className="py-2.5 px-4 text-right font-sans text-bold">View Tax Invoice</th>
+                    <th className="py-2.5 px-4 text-right font-sans text-bold">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-150 text-gray-750 text-center text-bold">
@@ -1508,12 +1508,32 @@ export default function SalesManager({
                       <td className="py-3 px-4 text-right font-mono text-gray-650">₹{srv.labourCharges.toLocaleString('en-IN')}</td>
                       <td className="py-3 px-4 font-bold font-mono text-right text-emerald-700">₹{srv.totalAmount.toLocaleString('en-IN')}</td>
                       <td className="py-3 px-4 text-right">
-                        <button
-                          onClick={() => setViewingTaxInvoice({ type: 'service', data: srv })}
-                          className="px-2.5 py-1 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded text-[10px] font-bold tracking-wider cursor-pointer border border-emerald-105"
-                        >
-                          Invoice
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setViewingTaxInvoice({ type: 'service', data: srv })}
+                            className="px-2.5 py-1 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded text-[10px] font-bold tracking-wider cursor-pointer border border-emerald-105"
+                          >
+                            Invoice
+                          </button>
+                          <a
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setEditingServiceInvoice(srv);
+                            }}
+                            className="px-2.5 py-1 text-blue-600 hover:bg-blue-50 rounded text-[10px] font-bold cursor-pointer transition-colors"
+                            title="Edit service invoice"
+                          >
+                            Edit
+                          </a>
+                          <button
+                            onClick={() => handleDeleteServiceInvoice(srv.id)}
+                            className="p-1 px-1.5 text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                            title="Delete service invoice"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
