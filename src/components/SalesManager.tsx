@@ -46,6 +46,7 @@ export interface EstimationSplit {
 
 export interface Estimation {
   id: string;
+  dealerId: string;
   slipNo: string;
   customerName: string;
   contactNo: string;
@@ -82,6 +83,7 @@ export default function SalesManager({
     return [
       {
         id: 'est-seed-1',
+        dealerId: '',
         slipNo: 'EST/26-27/001',
         customerName: 'Ananth Gowda',
         contactNo: '9845011223',
@@ -121,9 +123,9 @@ export default function SalesManager({
 
   useEffect(() => {
     // Auto-generate estimation slip number
-    const padNo = String(estimations.length + 1).padStart(3, '0');
-    setEstSlipNo(`EST/26-27/${padNo}`);
-  }, [estimations]);
+    const dealerEstCount = estimations.filter(e => e.dealerId === currentDealer.id).length + 1;
+    setEstSlipNo(`AAV-RRE-${currentDealer.code}-${String(dealerEstCount).padStart(3, '0')}`);
+  }, [estimations, currentDealer.id, currentDealer.code]);
 
   const handleAddSplit = () => {
     setEstSplits([...estSplits, { amount: 0, paymentMethod: 'Cash', date: '2026-06-22' }]);
@@ -159,6 +161,7 @@ export default function SalesManager({
 
     const newEst: Estimation = {
       id: `est-uuid-${Math.floor(1000 + Math.random() * 9000)}`,
+      dealerId: currentDealer.id,
       slipNo: estSlipNo,
       customerName: estCustomerName,
       contactNo: estContactNo,
@@ -210,7 +213,13 @@ export default function SalesManager({
   const [saleAmount, setSaleAmount] = useState(0);
   const [salePaymentMode, setSalePaymentMode] = useState<'Cash' | 'Card' | 'UPI' | 'Bank Transfer'>('Cash');
   const [saleLeadSource, setSaleLeadSource] = useState('');
-  const [saleGstNo, setSaleGstNo] = useState('36ACJFA4386L1ZW');
+  const [saleGstNo, setSaleGstNo] = useState(() => {
+    const dealerName = currentDealer.name?.toLowerCase() || '';
+    if (dealerName.includes('zen') || dealerName.includes('zenz')) {
+      return '36ABLFR7464F1ZR';
+    }
+    return '36ACJFA4386L1ZW';
+  });
   const [saleDisplaySplits, setSaleDisplaySplits] = useState(false);
   const [saleSplits, setSaleSplits] = useState<Array<{ amount: number; paymentMethod: string; date: string }>>([
     { amount: 0, paymentMethod: 'Cash', date: '2026-06-22' }
@@ -271,9 +280,9 @@ export default function SalesManager({
 
   useEffect(() => {
     // Auto-generate service invoice number
-    const padNo = String(serviceInvoices.length + 1).padStart(3, '0');
-    setSrvInvoiceNo(`SRV/2026-27/${padNo}`);
-  }, [serviceInvoices]);
+    const dealerSrvCount = serviceInvoices.filter(s => s.dealerId === currentDealer.id).length + 1;
+    setSrvInvoiceNo(`AAV-RRE-${currentDealer.code}-${String(dealerSrvCount).padStart(3, '0')}`);
+  }, [serviceInvoices, currentDealer.id, currentDealer.code]);
 
   // Split calculations for Sale Entry
   const totalPaidInSaleSplits = saleSplits.reduce((acc, current) => acc + current.amount, 0);
@@ -1731,7 +1740,13 @@ export default function SalesManager({
                     Authorized Billing Point | State: Telangana | Code: 36
                   </p>
                   <p className="font-mono font-bold text-[9.5px] text-gray-800">
-                    FRANCHISE REGISTERED GSTIN: {viewingTaxInvoice.type === 'sale' && viewingTaxInvoice.data.gstNo ? viewingTaxInvoice.data.gstNo : '29AXGPI8174C3ZD'}
+                    FRANCHISE REGISTERED GSTIN: {(() => {
+                      const dealerName = currentDealer.name?.toLowerCase() || '';
+                      if (dealerName.includes('zen') || dealerName.includes('zenz')) {
+                        return '36ABLFR7464F1ZR';
+                      }
+                      return viewingTaxInvoice.type === 'sale' && viewingTaxInvoice.data.gstNo ? viewingTaxInvoice.data.gstNo : '29AXGPI8174C3ZD';
+                    })()}
                   </p>
                 </div>
               </div>

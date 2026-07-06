@@ -396,11 +396,9 @@ export default function App() {
   // --- Dynamic Sales Invoicing ---
   const handleAddSale = (saleData: Omit<Sale, 'id' | 'dealerId' | 'invoiceNo' | 'date'> & { date?: string; invoiceNo?: string }) => {
     if (!currentDealer) return;
-    
-    const uniqueRandNo = Math.floor(100 + Math.random() * 900);
-    const codePart = currentDealer.code.includes('-') ? currentDealer.code.split('-')[1] : currentDealer.code;
-    const suffixPart = Math.floor(1000 + Math.random() * 9000);
-    const invoiceNo = saleData.invoiceNo || `TAX-${codePart}-2026-${uniqueRandNo}-${suffixPart}`;
+
+    const dealerSalesCount = sales.filter(s => s.dealerId === currentDealer.id).length + 1;
+    const invoiceNo = saleData.invoiceNo || `AAV-RRE-${currentDealer.code}-${String(dealerSalesCount).padStart(3, '0')}`;
 
     const newSale: Sale = {
       ...saleData,
