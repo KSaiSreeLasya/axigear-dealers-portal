@@ -43,61 +43,115 @@ html, body {
 
 /* Print Styles to isolate the tax invoice sheet cleanly on a standard A4 page */
 @media print {
-  body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Hide everything on the page by default */
-  body * {
-    visibility: hidden !important;
-  }
-
-  /* Show only the printable block and its nested elements */
-  #printable-gst-invoice-block,
-  #printable-gst-invoice-block * {
-    visibility: visible !important;
-  }
-
-  /* Force all container ancestor elements to static flow so the invoice absolutely targets page 0,0 */
-  html, body, #root, #root *, main, div {
-    position: static !important;
-    overflow: visible !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-  }
-
-  /* Absolute position the invoice to take full workspace print area */
-  #printable-gst-invoice-block {
-    visibility: visible !important;
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: #ffffff !important;
-  }
-
-  /* Ensure standard browsers print full colorful elements correctly */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Prevent page breaks inside critical modules */
-  .border, tr, p, div {
-    page-break-inside: avoid;
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100% !important;
+    background: #ffffff !important;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Hide all elements by default */
+  body > * {
+    display: none !important;
+  }
+
+  /* Show the modal overlay */
+  .invoice-print-modal-overlay {
+    display: flex !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    inset: auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+  }
+
+  /* Show the modal content */
+  .invoice-print-modal-content {
+    display: block !important;
+    position: static !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Hide the modal controls (print button, close button, etc.) */
+  .invoice-print-modal-content > div:first-child {
+    display: none !important;
+  }
+
+  /* Show the printable block */
+  #printable-gst-invoice-block {
+    display: block !important;
+    position: static !important;
+    visibility: visible !important;
+    margin: 0 !important;
+    padding: 40px 20px !important;
+    width: 100% !important;
+    height: auto !important;
+    background: #ffffff !important;
+    border: none !important;
+    overflow: visible !important;
+  }
+
+  /* Preserve all child elements visibility and layout */
+  #printable-gst-invoice-block * {
+    visibility: visible !important;
+    display: block !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Fix table layout */
+  table, tbody, thead, tr, td, th {
+    display: table !important;
+    width: auto !important;
+    page-break-inside: avoid !important;
+  }
+
+  tbody, thead {
+    display: table-row-group !important;
+  }
+
+  tr {
+    display: table-row !important;
+  }
+
+  td, th {
+    display: table-cell !important;
+  }
+
+  /* Ensure proper spacing */
+  div, p, span, h1, h2, h3, h4, h5, h6 {
+    display: block !important;
+  }
+
+  span {
+    display: inline !important;
   }
 }
-
