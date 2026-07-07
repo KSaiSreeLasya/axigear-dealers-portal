@@ -43,131 +43,125 @@ html, body {
 
 /* Print Styles to isolate the tax invoice sheet cleanly on a standard A4 page */
 @media print {
+  /* Force color printing */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
+  /* Page setup */
+  @page {
+    margin: 0;
+    size: A4;
+  }
+
+  html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
   }
 
   body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
     width: 100% !important;
   }
 
-  /* Hide all elements by default */
-  body > * {
+  /* Hide all body children except the modal */
+  body > *:not(.invoice-print-modal-overlay) {
     display: none !important;
   }
 
-  /* Show ONLY the modal overlay */
+  /* Show modal overlay */
   .invoice-print-modal-overlay {
     display: block !important;
     position: static !important;
+    inset: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
-    background: #ffffff !important;
+    background: white !important;
+    background-color: white !important;
     backdrop-filter: none !important;
-    inset: auto !important;
     overflow: visible !important;
-    page-break-inside: avoid !important;
+    flex-direction: column !important;
   }
 
-  /* Show the modal content */
+  /* Show modal content */
   .invoice-print-modal-content {
     display: block !important;
     position: static !important;
     margin: 0 !important;
     padding: 0 !important;
-    max-width: 100% !important;
     width: 100% !important;
     height: auto !important;
-    background: #ffffff !important;
+    max-width: 100% !important;
+    background: white !important;
+    background-color: white !important;
     border: none !important;
-    box-shadow: none !important;
     border-radius: 0 !important;
+    box-shadow: none !important;
     overflow: visible !important;
-    page-break-inside: avoid !important;
   }
 
-  /* Hide the modal header controls (print button, close button, etc.) */
+  /* Hide modal header with buttons */
   .invoice-print-modal-content > div:first-child {
     display: none !important;
   }
 
-  /* Show the printable block - MUST be only child displayed */
+  /* Show invoice content */
   #printable-gst-invoice-block {
     display: block !important;
     position: static !important;
     visibility: visible !important;
     margin: 0 !important;
-    padding: 20px 15px !important;
+    padding: 10px !important;
     width: 100% !important;
     height: auto !important;
-    background: #ffffff !important;
+    background: white !important;
+    background-color: white !important;
     border: none !important;
     overflow: visible !important;
     page-break-inside: avoid !important;
-    font-size: 10px !important;
   }
 
-  /* Reset all nested elements for proper display */
+  /* Ensure children are visible */
   #printable-gst-invoice-block * {
-    visibility: visible !important;
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    overflow: visible !important;
-    margin: inherit !important;
-    padding: inherit !important;
-    border: inherit !important;
-  }
-
-  /* Fix block elements */
-  #printable-gst-invoice-block div,
-  #printable-gst-invoice-block p,
-  #printable-gst-invoice-block h1,
-  #printable-gst-invoice-block h2,
-  #printable-gst-invoice-block h3,
-  #printable-gst-invoice-block h4,
-  #printable-gst-invoice-block h5,
-  #printable-gst-invoice-block h6 {
     display: block !important;
-    width: auto !important;
+    position: static !important;
+    visibility: visible !important;
   }
 
-  /* Fix inline elements */
+  /* Proper inline elements */
   #printable-gst-invoice-block span,
   #printable-gst-invoice-block strong,
+  #printable-gst-invoice-block b,
   #printable-gst-invoice-block em,
-  #printable-gst-invoice-block i,
-  #printable-gst-invoice-block b {
+  #printable-gst-invoice-block i {
     display: inline !important;
   }
 
-  /* Fix table layout */
-  #printable-gst-invoice-block table {
+  /* Fix tables */
+  #printable-gst-invoice-block table,
+  #printable-gst-invoice-block tbody,
+  #printable-gst-invoice-block thead,
+  #printable-gst-invoice-block tfoot,
+  #printable-gst-invoice-block tr,
+  #printable-gst-invoice-block td,
+  #printable-gst-invoice-block th {
     display: table !important;
-    width: 100% !important;
-    page-break-inside: avoid !important;
-    border-collapse: collapse !important;
   }
 
   #printable-gst-invoice-block tbody,
-  #printable-gst-invoice-block thead {
+  #printable-gst-invoice-block thead,
+  #printable-gst-invoice-block tfoot {
     display: table-row-group !important;
   }
 
   #printable-gst-invoice-block tr {
     display: table-row !important;
-    page-break-inside: avoid !important;
   }
 
   #printable-gst-invoice-block td,
@@ -175,14 +169,8 @@ html, body {
     display: table-cell !important;
   }
 
-  /* Prevent page breaks in critical content */
-  #printable-gst-invoice-block > div {
-    page-break-inside: avoid !important;
-  }
-
-  /* Set page margins and size */
-  @page {
-    margin: 0 !important;
-    size: A4;
+  #printable-gst-invoice-block table {
+    width: 100% !important;
+    border-collapse: collapse !important;
   }
 }
