@@ -511,13 +511,13 @@ export function downloadInvoiceHTML(invoice: any, type: 'sale' | 'estimation' | 
         </td>
         <td class="billing-col">
           <div class="billing-title">Retail Outlet / Franchisee</div>
-          <div class="address-box">
-            <strong>${dealer?.name === 'ZEN -Z ENERGY' ? 'RAMYA RAJ ENTERPRISES LLP (ZEN -Z ENERGY)' : dealer?.name || 'N/A'}</strong><br>
-            Store Address: ${dealer?.name === 'RAMYA RAJ ENTERPRISES(ZEN -Z ENERGY)' ? 'KRISHNAREDDYPET, BEERAMGUDA' : dealer?.location || address}<br>
-            Dealer License Ref No: ${dealer?.code || 'N/A'}<br>
-            FRANCHISE REGISTERED GSTIN: ${invoice.gstNo || (dealer?.name?.toLowerCase().includes('zen') ? '36ABLFR7464F1ZR' : '29AXGPI8174C3ZD')}<br>
-            Contact: ${dealer?.name === 'RAMYA RAJ ENTERPRISES(ZEN -Z ENERGY' ? '7989161749' :  'N/A'}
-          </div>
+<div class="address-box">
+  <strong>${dealer?.name?.toUpperCase().includes('ZEN -Z ENERGY') ? 'RAMYA RAJ ENTERPRISES LLP (ZEN -Z ENERGY)' : dealer?.name || 'N/A'}</strong><br>
+  Store Address: ${dealer?.name?.toUpperCase().includes('ZEN -Z ENERGY') ? 'KRISHNAREDDYPET, BEERAMGUDA' : dealer?.location || address}<br>
+  Dealer License Ref No: ${dealer?.code || 'N/A'}<br>
+  FRANCHISE REGISTERED GSTIN: ${invoice.gstNo || (dealer?.name?.toUpperCase().includes('ZEN -Z ENERGY') ? '36ABLFR7464F1ZR' : '29AXGPI8174C3ZD')}<br>
+  ${dealer?.name?.toUpperCase().includes('ZEN -Z ENERGY') ? '7989161749' : ''}
+</div>
         </td>
       </tr>
     </table>
